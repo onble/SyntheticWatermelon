@@ -26,12 +26,26 @@ export default class MainGame extends cc.Component {
     // 已创建水果计数
     createFruitCount: number = 0;
 
+    protected onLoad(): void {
+        this.phsicsSystemCtrl(true, false);
+    }
     protected start(): void {
         this.createOneFruit(0);
 
         this.bindTouch();
     }
 
+    phsicsSystemCtrl(enablePhysics: boolean, enableDebug: boolean) {
+        cc.director.getPhysicsManager().enabled = enablePhysics;
+        cc.director.getPhysicsManager().gravity = cc.v2(0, -300);
+        if (enableDebug) {
+            cc.director.getPhysicsManager().debugDrawFlags = cc.PhysicsManager.DrawBits.e_shapeBit;
+        }
+        cc.director.getCollisionManager().enabled = enablePhysics;
+        cc.director.getCollisionManager().enabledDebugDraw = enableDebug;
+    }
+
+    // 创建一个水果
     createOneFruit(index: number) {
         let t = this;
         let n = cc.instantiate(this.fruitPre);
@@ -39,6 +53,11 @@ export default class MainGame extends cc.Component {
         n.getComponent(cc.Sprite).spriteFrame = this.fruitSprites[index];
         // 获取附加给水果节点的Fruit脚本组件，注意名字大小写敏感
         n.getComponent(Fruit).fruitNumber = index;
+
+        // 创建时不受重力影响，碰撞物理边界半径为0
+        n.getComponent(cc.RigidBody).type = cc.RigidBodyType.Static;
+        n.getComponent(cc.PhysicsCircleCollider).radius = 0;
+        n.getComponent(cc.PhysicsCircleCollider).apply();
 
         // 从新变大的一个展示效果
         n.scale = 0;
@@ -89,7 +108,11 @@ export default class MainGame extends cc.Component {
             return;
         }
         // 让水果降落
-        // TODO:
+        let h = this.targetFruit.height;
+        t.targetFruit.getComponent(cc.PhysicsCircleCollider).radius = h / 2;
+        t.targetFruit.getComponent(cc.PhysicsCircleCollider).apply();
+        t.targetFruit.getComponent(cc.RigidBody).type = cc.RigidBodyType.Dynamic;
+        t.targetFruit.getComponent(cc.RigidBody).linearVelocity = cc.v2(0, -800);
 
         // 去掉暂存指向
         this.targetFruit = null;

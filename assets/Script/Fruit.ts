@@ -72,6 +72,7 @@ export default class Fruit extends cc.Component {
                     })
                     .call(function () {
                         // 创建爆浆效果，果汁飞溅的效果
+                        MainGame.Instance.createFruitBoomEffect(selfFruitNumber, pos, selfCollider.node.width);
 
                         // 创建合成的水果
                         MainGame.Instance.createLevelUpFruit(selfFruitNumber + 1, pos);

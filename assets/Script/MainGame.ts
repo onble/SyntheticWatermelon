@@ -24,6 +24,23 @@ export default class MainGame extends cc.Component {
     @property(cc.Node)
     fruitNode: cc.Node = null;
 
+    // 果汁效果图，水果颗粒
+    @property([cc.SpriteFrame])
+    fruitL: Array<cc.SpriteFrame> = [];
+    // 果粒散溅
+    @property([cc.SpriteFrame])
+    guozhiL: Array<cc.SpriteFrame> = [];
+    // 果汁效果
+    @property([cc.SpriteFrame])
+    guozhiZ: Array<cc.SpriteFrame> = [];
+
+    // 果汁预制体资源
+    @property(cc.Prefab)
+    juicePre: cc.Prefab = null;
+    // 效果挂载的节点
+    @property(cc.Node)
+    effectNode: cc.Node = null;
+
     // 用来暂存生成的水果节点
     targetFruit: cc.Node = null;
 
@@ -192,5 +209,74 @@ export default class MainGame extends cc.Component {
                 ? (t.createOneFruit(3), t.createFruitCount++)
                 : (t.createFruitCount > 5 && t.createOneFruit(Math.floor(Math.random() * 5)), t.createFruitCount++);
         }, 0.5);
+    }
+
+    createFruitBoomEffect(fruitNumber: number, t: cc.Vec3, width: number) {
+        let _t: MainGame = this;
+
+        for (var o = 0; o < 10; o++) {
+            let c = cc.instantiate(_t.juicePre);
+            c.parent = _t.effectNode;
+            c.getComponent(cc.Sprite).spriteFrame = _t.guozhiL[fruitNumber];
+            var a = 359 * Math.random(),
+                i = 30 * Math.random() + width / 2,
+                l = cc.v2(Math.sin((a * Math.PI) / 180) * i, Math.cos((a * Math.PI) / 180) * i);
+            c.scale = 0.5 * Math.random() + width / 100;
+            var p = 0.5 * Math.random();
+            (c.position = t),
+                c.runAction(
+                    cc.sequence(
+                        cc.spawn(
+                            cc.moveBy(p, l),
+                            cc.scaleTo(p + 0.5, 0.3),
+                            cc.rotateBy(p + 0.5, _t.randomInteger(-360, 360))
+                        ),
+                        cc.fadeOut(0.1),
+                        cc.callFunc(function () {
+                            c.active = !1;
+                        }, this)
+                    )
+                );
+        }
+        for (var f = 0; f < 20; f++) {
+            let h = cc.instantiate(_t.juicePre);
+            h.parent = _t.effectNode;
+            (h.getComponent(cc.Sprite).spriteFrame = _t.fruitL[fruitNumber]), (h.active = !0);
+            (a = 359 * Math.random()),
+                (i = 30 * Math.random() + width / 2),
+                (l = cc.v2(Math.sin((a * Math.PI) / 180) * i, Math.cos((a * Math.PI) / 180) * i));
+            h.scale = 0.5 * Math.random() + width / 100;
+            p = 0.5 * Math.random();
+            (h.position = t),
+                h.runAction(
+                    cc.sequence(
+                        cc.spawn(cc.moveBy(p, l), cc.scaleTo(p + 0.5, 0.3)),
+                        cc.fadeOut(0.1),
+                        cc.callFunc(function () {
+                            h.active = !1;
+                        }, this)
+                    )
+                );
+        }
+
+        var m = cc.instantiate(_t.juicePre);
+        m.parent = _t.effectNode;
+        m.active = true;
+        (m.getComponent(cc.Sprite).spriteFrame = _t.guozhiZ[fruitNumber]),
+            (m.position = t),
+            (m.scale = 0),
+            (m.angle = this.randomInteger(0, 360)),
+            m.runAction(
+                cc.sequence(
+                    cc.spawn(cc.scaleTo(0.2, width / 150), cc.fadeOut(1)),
+                    cc.callFunc(function () {
+                        m.active = !1;
+                    })
+                )
+            );
+    }
+
+    randomInteger(min: number, max: number) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 }

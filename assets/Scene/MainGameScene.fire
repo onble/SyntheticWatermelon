@@ -85,18 +85,21 @@
       },
       {
         "__id__": 28
+      },
+      {
+        "__id__": 30
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 30
-      },
-      {
         "__id__": 31
       },
       {
         "__id__": 32
+      },
+      {
+        "__id__": 33
       }
     ],
     "_prefab": null,
@@ -1239,6 +1242,64 @@
     "_id": "55AVL7rK9BsYpv5sC7KTxX"
   },
   {
+    "__type__": "cc.Node",
+    "_name": "daxiguaEffectNode",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 2
+    },
+    "_children": [],
+    "_active": true,
+    "_components": [],
+    "_prefab": null,
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 0,
+      "height": 0
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_trs": {
+      "__type__": "TypedArray",
+      "ctor": "Float64Array",
+      "array": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "_eulerAngles": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "_is3DNode": false,
+    "_groupIndex": 0,
+    "groupIndex": 0,
+    "_id": "cdvXW2TQxAJpHj4g3SLQOo"
+  },
+  {
     "__type__": "cc.Canvas",
     "_name": "",
     "_objFlags": 0,
@@ -1465,6 +1526,44 @@
         "__uuid__": "e2a29d78-2326-438d-9f3d-400e99ae1b2e"
       }
     ],
+    "maskBg": {
+      "__uuid__": "183cba00-efde-4dca-9f8e-31da268f98bb"
+    },
+    "caidaiSprites": [
+      {
+        "__uuid__": "c13bd3d9-1654-4353-b824-ffa2b6770fd0"
+      },
+      {
+        "__uuid__": "4709cf02-ff61-43d6-aacd-1d1b689c2321"
+      },
+      {
+        "__uuid__": "631e4912-1526-448a-8332-26a11d17bfe1"
+      },
+      {
+        "__uuid__": "4e13962f-ad27-460e-8c4f-658bd67ff04e"
+      },
+      {
+        "__uuid__": "8c6ddef1-336b-4966-9f6d-4a9f08c0b370"
+      },
+      {
+        "__uuid__": "68fc7e12-b1d0-4c9c-9424-8cd447337280"
+      },
+      {
+        "__uuid__": "346283ca-bbcc-4780-91ff-ef3c67ce0fc8"
+      },
+      {
+        "__uuid__": "27b4ea2b-0d72-4e2a-923e-ffacc52418cb"
+      },
+      {
+        "__uuid__": "f6ac1357-4292-495f-9cf3-beeec28515d2"
+      }
+    ],
+    "caidaiPre": {
+      "__uuid__": "4eac7864-e697-4c0b-a32d-e66b45c808aa"
+    },
+    "daxiguaEffectNode": {
+      "__id__": 30
+    },
     "_id": "cbhkQ96HZJ4aEV0g1qkt7J"
   }
 ]

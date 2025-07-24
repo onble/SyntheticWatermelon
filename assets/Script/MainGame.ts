@@ -44,6 +44,19 @@ export default class MainGame extends cc.Component {
     //音效列表
     @property([cc.AudioClip])
     audios: Array<cc.AudioClip> = [];
+    //遮罩背景图节点
+    @property(cc.Prefab)
+    maskBg: cc.Prefab = null;
+
+    //彩带精灵图
+    @property([cc.SpriteFrame])
+    caidaiSprites: Array<cc.SpriteFrame> = [];
+    //彩带预制节点
+    @property(cc.Prefab)
+    caidaiPre: cc.Prefab = null;
+    //合成大西瓜效果挂载节点
+    @property(cc.Node)
+    daxiguaEffectNode: cc.Node = null;
 
     // 用来暂存生成的水果节点
     targetFruit: cc.Node = null;
@@ -295,5 +308,117 @@ export default class MainGame extends cc.Component {
      */
     playAudio(clipIndex: number, loop: boolean, volume: number) {
         cc.audioEngine.play(this.audios[clipIndex], loop, volume);
+    }
+
+    createBigWaterMelonEffect() {
+        let _t = this;
+        //大西瓜显示特效
+        var e = cc.instantiate(_t.maskBg);
+        e.parent = _t.daxiguaEffectNode;
+        e.active = true;
+        e.opacity = 0;
+        cc.tween(e)
+            .to(0.5, {
+                opacity: 150,
+            })
+            .start();
+
+        var c = new cc.Node();
+
+        c.addComponent(cc.Sprite).spriteFrame = _t.fruitSprites[10];
+        c.parent = _t.daxiguaEffectNode;
+        c.position = cc.v3(0, 0, 0);
+        c.scale = 0;
+
+        //旋转的光圈背景图
+        var r = new cc.Node();
+        r.addComponent(cc.Sprite).spriteFrame = _t.caidaiSprites[8];
+        r.scale = 3;
+        r.parent = c;
+        r.position = cc.v3(0);
+        cc.tween(r)
+            .by(5, {
+                angle: 360,
+            })
+            .repeatForever()
+            .start();
+
+        var s = new cc.Node();
+        (s.addComponent(cc.Sprite).spriteFrame = _t.fruitSprites[10]),
+            (s.parent = c),
+            (s.position = cc.v3(0)),
+            //播放音效
+            _t.playAudio(2, false, 1),
+            //抛撒彩带效果
+            _t.createRibbonEffect(cc.v3(0, 300, 0), this.daxiguaEffectNode),
+            c.runAction(
+                cc.sequence(
+                    cc.spawn(cc.jumpBy(1, 0, 0, 300, 1), cc.scaleTo(1, 1)),
+
+                    cc.delayTime(1),
+
+                    cc.spawn(cc.moveTo(1, cc.v2(0, 800)), cc.scaleTo(1, 0)),
+
+                    cc.callFunc(function () {
+                        //(a.default.score += 100),
+                        //u.default.Instance.SetScoreTween(a.default.score),
+                        e.destroy(),
+                            //(a.default.playerTouch = !0),
+                            c.destroy();
+                    })
+                )
+            );
+    }
+
+    createRibbonEffect(pos: cc.Vec3, parentNode: cc.Node) {
+        let _t = this;
+        _t.playAudio(1, false, 1);
+        for (var t = this.getRandomNum(80, 100, 0), n = 0; n < t; n++) {
+            var o = cc.instantiate(_t.caidaiPre);
+            o.parent = parentNode;
+            o.getComponent(cc.Sprite).spriteFrame = _t.caidaiSprites[this.getRandomNum(0, 5, true)];
+            o.position = pos;
+
+            o.setScale(this.getRandomNum(0.7, 1, 0));
+            let c = (360 * Math.random() * Math.PI) / 180,
+                a = 360 * Math.random(),
+                i = cc.v2(o.x + Math.sin(c) * a, o.y + Math.cos(c) * a + 150);
+
+            cc.v2(i.x, i.y + 100);
+            o.runAction(
+                cc.sequence(
+                    cc.spawn(
+                        cc.moveTo(0.255, i).easing(cc.easeCubicActionOut()),
+                        cc.scaleTo(0.255, 1 * Math.random() + 0.5),
+                        cc.moveBy(4.25, cc.v2(0, 0.8 * -cc.winSize.height - Math.random() * cc.winSize.height)),
+                        cc.rotateBy(4.25, (1800 * Math.random() + 1200) * (Math.random() > 0.5 ? 1 : -1)),
+                        cc.sequence(
+                            cc.moveBy(
+                                0.17 * (8 * Math.random() + 6),
+                                cc.v2((100 * Math.random() + 100) * (Math.random() > 0.5 ? -1 : 1), 0)
+                            ),
+                            cc.moveBy(
+                                0.17 * (8 * Math.random() + 6),
+                                cc.v2((100 * Math.random() + 100) * (Math.random() > 0.5 ? -1 : 1), 0)
+                            ),
+                            cc.moveBy(
+                                0.17 * (8 * Math.random() + 6),
+                                cc.v2((100 * Math.random() + 100) * (Math.random() > 0.5 ? -1 : 1), 0)
+                            )
+                        ),
+                        cc.sequence(cc.delayTime(0.17 * this.getRandomNum(20, 24.5, 0)), cc.fadeOut(0.17))
+                    ),
+                    cc.removeSelf(!0),
+                    cc.callFunc(function () {
+                        //PoolManager.Instance.putNode("caidaiPrefab", o);
+                        o.active = false;
+                    })
+                )
+            );
+        }
+    }
+
+    getRandomNum(e, t, n) {
+        return void 0 === n && (n = !1), n ? Math.floor(Math.random() * (t - e + 1) + e) : Math.random() * (t - e) + e;
     }
 }

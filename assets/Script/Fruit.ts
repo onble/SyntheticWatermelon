@@ -77,6 +77,11 @@ export default class Fruit extends cc.Component {
 
                         // 创建合成的水果
                         MainGame.Instance.createLevelUpFruit(selfFruitNumber + 1, pos);
+
+                        if (selfFruitNumber == 9) {
+                            MainGame.Instance.createBigWaterMelonEffect();
+                        }
+
                         // 销毁两个碰撞的水果
                         selfCollider.node.active = false;
                         otherCollider.node.active = false;

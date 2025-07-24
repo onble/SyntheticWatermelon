@@ -20,13 +20,31 @@ export default class MainGame extends cc.Component {
     @property(cc.Node)
     topNode: cc.Node = null;
 
+    //用来挂载落下的水果，作为他们的父节点，方便遍历查找
+    @property(cc.Node)
+    fruitNode: cc.Node = null;
+
     // 用来暂存生成的水果节点
     targetFruit: cc.Node = null;
 
     // 已创建水果计数
     createFruitCount: number = 0;
 
+    // 分数变动和结果
+    scoreObj = {
+        isScoreChanged: false,
+        target: 0,
+        change: 0,
+        score: 0,
+    };
+
+    // 设置一个静态单例引用，方便其他类中调用该类方法
+    static Instance: MainGame = null;
+
     protected onLoad(): void {
+        null != MainGame.Instance && MainGame.Instance.destroy();
+        MainGame.Instance = this;
+
         this.phsicsSystemCtrl(true, false);
     }
     protected start(): void {
@@ -34,6 +52,48 @@ export default class MainGame extends cc.Component {
 
         this.bindTouch();
     }
+
+    protected update(dt: number): void {
+        this.updateScoreLabel(dt);
+    }
+
+    createLevelUpFruit = function (fruitNumber: number, position: cc.Vec3) {
+        let _t: MainGame = this;
+        let o = cc.instantiate(this.fruitPre);
+        o.parent = _t.fruitNode;
+        o.getComponent(cc.Sprite).spriteFrame = _t.fruitSprites[fruitNumber];
+        o.getComponent(Fruit).fruitNumber = fruitNumber;
+        o.position = position;
+        o.scale = 0;
+
+        o.getComponent(cc.RigidBody).linearVelocity = cc.v2(0, -100);
+        o.getComponent(cc.PhysicsCircleCollider).radius = o.height / 2;
+        o.getComponent(cc.PhysicsCircleCollider).apply();
+        cc.tween(o)
+            .to(0.5, { scale: 1 }, { easing: "backOut" })
+            .call(function () {})
+            .start();
+    };
+
+    //#region 分数面板更新
+    setScoreTween(score: number) {
+        let scoreObj = this.scoreObj;
+        scoreObj.target != score &&
+            ((scoreObj.target = score),
+            ((scoreObj.change = Math.abs((scoreObj.target = scoreObj.score))), (scoreObj.isScoreChanged = !0)));
+    }
+
+    updateScoreLabel(dt: number) {
+        let scoreObj = this.scoreObj;
+        if (scoreObj.isScoreChanged) {
+            (scoreObj.score += dt * scoreObj.change * 5),
+                scoreObj.score >= scoreObj.target &&
+                    ((scoreObj.score = scoreObj.target), (scoreObj.isScoreChanged = !1));
+            var t = Math.floor(scoreObj.score);
+            this.scoreLabel.string = t.toString();
+        }
+    }
+    //#endregion 分数面板更新
 
     phsicsSystemCtrl(enablePhysics: boolean, enableDebug: boolean) {
         cc.director.getPhysicsManager().enabled = enablePhysics;

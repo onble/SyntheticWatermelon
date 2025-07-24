@@ -9,6 +9,17 @@ export default class Fruit extends cc.Component {
     // 和底部边界碰撞的次数，用来标记第一次碰撞时播放音效
     downWallColl: number = 0;
 
+    edgeX: number = 0;
+
+    //过线停留时间
+    checkEndTime: number = 0;
+
+    //碰撞合并次数
+    combineCount: number = 0;
+
+    //已经触发过线的次数，防止一直触发
+    endCount: number = 0;
+
     // 碰撞开始事件
     onBeginContact(
         contact: cc.PhysicsContact,
@@ -31,6 +42,9 @@ export default class Fruit extends cc.Component {
 
             _t.downWallColl++;
         }
+
+        //检查水果高度
+        MainGame.Instance.findHighestFruit();
 
         // 是否碰撞到其他水果
         if (otherCollider.node.group == "fruit") {
@@ -92,5 +106,46 @@ export default class Fruit extends cc.Component {
             }
         }
     }
-    protected start(): void {}
+    protected start(): void {
+        this.edgeX = 360 - this.node.width / 2;
+    }
+
+    update(dt) {
+        let _t = this;
+
+        //防止水果超出左右边界
+        if (_t.node.x < -_t.edgeX) {
+            _t.node.x = -_t.edgeX;
+        } else if (_t.node.x > _t.edgeX) {
+            _t.node.x = _t.edgeX;
+        }
+
+        if (_t.node.parent.name == "fruitNode") {
+            _t.checkEndTime += dt;
+            if (
+                _t.node.y + _t.node.height / 2 > MainGame.Instance.dashLineNode.y &&
+                _t.endCount == 0 &&
+                _t.checkEndTime > 3
+            ) {
+                _t.node.color = cc.Color.RED;
+                //过线的水果变红闪
+                cc.tween(this.node)
+                    .to(0.3, {
+                        opacity: 0,
+                    })
+                    .to(0.3, {
+                        opacity: 255,
+                    })
+                    .union()
+                    .repeat(3)
+                    .call(function () {
+                        //结束游戏
+                        MainGame.Instance.gameOver();
+                    })
+                    .start();
+
+                _t.endCount++;
+            }
+        }
+    }
 }

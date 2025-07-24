@@ -58,6 +58,21 @@ export default class MainGame extends cc.Component {
     @property(cc.Node)
     daxiguaEffectNode: cc.Node = null;
 
+    //游戏结束界面
+    @property(cc.Prefab)
+    gameOverPre: cc.Prefab = null;
+
+    //标记游戏结束
+    gameOverSign: number = 0;
+
+    //全部水果最高高度
+    theFruitHeight: number = -1200;
+
+    @property(cc.Node)
+    dashLineNode: cc.Node = null;
+
+    isDashLineInit: boolean = false;
+
     // 用来暂存生成的水果节点
     targetFruit: cc.Node = null;
 
@@ -82,13 +97,19 @@ export default class MainGame extends cc.Component {
         this.phsicsSystemCtrl(true, false);
     }
     protected start(): void {
+        //初始化红色虚线
+        this.initDashLine();
+        //创建一个水果
         this.createOneFruit(0);
 
+        //绑定点击事件
         this.bindTouch();
     }
 
     protected update(dt: number): void {
         this.updateScoreLabel(dt);
+
+        this.checkTheRedDashLine(dt);
     }
 
     createLevelUpFruit = function (fruitNumber: number, position: cc.Vec3) {
@@ -420,5 +441,127 @@ export default class MainGame extends cc.Component {
 
     getRandomNum(e, t, n) {
         return void 0 === n && (n = !1), n ? Math.floor(Math.random() * (t - e + 1) + e) : Math.random() * (t - e) + e;
+    }
+    showGameOverPanel() {
+        let _t = this;
+        let gameOverPanelNode = cc.instantiate(this.gameOverPre);
+        gameOverPanelNode.parent = _t.node;
+
+        gameOverPanelNode.getChildByName("startBtn").on(cc.Node.EventType.TOUCH_START, function (e: cc.Event) {
+            _t.restartGame();
+        });
+        let btnNode = gameOverPanelNode.getChildByName("startBtn");
+
+        cc.tween(btnNode)
+            .to(1, {
+                scale: 0.8,
+            })
+            .to(1, {
+                scale: 0.9,
+            })
+            .union()
+            .repeatForever()
+            .start();
+
+        gameOverPanelNode.children[0].on(cc.Node.EventType.TOUCH_START, function (e: cc.Event) {
+            _t.restartGame();
+        });
+    }
+
+    restartGame() {
+        cc.director.preloadScene("MainGameSence", function () {
+            cc.director.loadScene("MainGameSence");
+        });
+    }
+
+    /**
+     * 游戏结束
+     */
+    gameOver() {
+        var _t = this;
+        if (_t.gameOverSign == 0) {
+            //游戏结束，水果自爆
+            for (
+                var t = 0,
+                    n = function (n) {
+                        setTimeout(function () {
+                            _t.createFruitBoomEffect(
+                                _t.fruitNode.children[n].getComponent("Fruit").fruitNumber,
+                                _t.fruitNode.children[n].position,
+                                _t.fruitNode.children[n].width
+                            );
+
+                            let score =
+                                _t.scoreObj.target + _t.fruitNode.children[n].getComponent("Fruit").fruitNumber + 1;
+                            _t.setScoreTween(score);
+                            _t.fruitNode.children[n].active = false;
+                        }, 100 * ++t);
+                    },
+                    o = this.fruitNode.children.length - 1;
+                o >= 0;
+                o--
+            )
+                n(o);
+            _t.dashLineNode.active = true;
+
+            for (var c = 1; c < _t.topNode.children.length; c++) {
+                _t.topNode.children[c].active = !1;
+            }
+
+            //a.default.GameUpdateCtrl = !1;
+            this.scheduleOnce(function () {
+                _t.showGameOverPanel();
+            }, 3);
+
+            _t.gameOverSign++;
+        }
+    }
+
+    //检测是否快到红线了
+    checkTheRedDashLine(dt) {
+        if (!this.isDashLineInit) {
+            return;
+        }
+        this.dashLineNode.y - this.theFruitHeight < 100 &&
+            this.dashLineNode.y - this.theFruitHeight >= 0 &&
+            (this.dashLineNode.active = true);
+
+        this.dashLineNode.y - this.theFruitHeight > 100 && (this.dashLineNode.active = false);
+    }
+
+    /**
+     * 查找最高的水果，在碰撞和生成后调用检测
+     */
+    findHighestFruit() {
+        for (
+            var e = this.fruitNode.children[0].y + this.fruitNode.children[0].width / 2, t = 1;
+            t < this.fruitNode.children.length;
+            t++
+        ) {
+            var n = this.fruitNode.children[t].y + this.fruitNode.children[t].width / 2;
+            e < n && (e = n);
+        }
+        this.theFruitHeight = e;
+    }
+
+    /**
+     * 初始化红线，并加入闪烁效果
+     */
+    initDashLine() {
+        let _t = this;
+        cc.tween(this.dashLineNode)
+            .to(0.3, {
+                opacity: 255,
+            })
+            .to(0.3, {
+                opacity: 0,
+            })
+            .union()
+            .repeatForever()
+            .start();
+        this.scheduleOnce(function () {
+            _t.dashLineNode.active = false;
+            _t.isDashLineInit = true;
+        }, 1);
     }
 }

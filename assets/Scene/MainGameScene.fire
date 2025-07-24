@@ -1564,6 +1564,12 @@
     "daxiguaEffectNode": {
       "__id__": 30
     },
+    "gameOverPre": {
+      "__uuid__": "f5e281eb-1ddd-465b-9be0-6de51ab8545b"
+    },
+    "dashLineNode": {
+      "__id__": 25
+    },
     "_id": "cbhkQ96HZJ4aEV0g1qkt7J"
   }
 ]

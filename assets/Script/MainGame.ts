@@ -41,6 +41,10 @@ export default class MainGame extends cc.Component {
     @property(cc.Node)
     effectNode: cc.Node = null;
 
+    //音效列表
+    @property([cc.AudioClip])
+    audios: Array<cc.AudioClip> = [];
+
     // 用来暂存生成的水果节点
     targetFruit: cc.Node = null;
 
@@ -214,6 +218,10 @@ export default class MainGame extends cc.Component {
     createFruitBoomEffect(fruitNumber: number, t: cc.Vec3, width: number) {
         let _t: MainGame = this;
 
+        //播放音效
+        _t.playAudio(4, false, 0.3);
+        _t.playAudio(1, false, 0.5);
+
         for (var o = 0; o < 10; o++) {
             let c = cc.instantiate(_t.juicePre);
             c.parent = _t.effectNode;
@@ -278,5 +286,14 @@ export default class MainGame extends cc.Component {
 
     randomInteger(min: number, max: number) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    /**
+     * @param clipIndex AudioClip The audio clip to play.
+     * @param loop Boolean Whether the music loop or not.
+     * @param volume Number Volume size.
+     */
+    playAudio(clipIndex: number, loop: boolean, volume: number) {
+        cc.audioEngine.play(this.audios[clipIndex], loop, volume);
     }
 }

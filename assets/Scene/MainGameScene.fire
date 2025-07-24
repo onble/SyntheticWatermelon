@@ -1448,6 +1448,23 @@
     "effectNode": {
       "__id__": 28
     },
+    "audios": [
+      {
+        "__uuid__": "b0f0690b-7b42-4304-9d2b-bde4c15a8b71"
+      },
+      {
+        "__uuid__": "f95abffd-0250-4da8-a018-5740e7e77022"
+      },
+      {
+        "__uuid__": "56ce5907-c3b4-468e-b9eb-03f5c1194d88"
+      },
+      {
+        "__uuid__": "b4d1040d-6ade-4d9c-b78c-3c6354ad5152"
+      },
+      {
+        "__uuid__": "e2a29d78-2326-438d-9f3d-400e99ae1b2e"
+      }
+    ],
     "_id": "cbhkQ96HZJ4aEV0g1qkt7J"
   }
 ]

@@ -26,6 +26,7 @@ export default class Fruit extends cc.Component {
             // 是否第一次碰撞
             if (_t.downWallColl == 0) {
                 // 播放碰撞音效
+                MainGame.Instance.playAudio(0, false, 1);
             }
 
             _t.downWallColl++;
